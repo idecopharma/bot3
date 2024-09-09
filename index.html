@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDECO CHAT BOT 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        h1 {
+            color: #ff0000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #error-message {
+            color: red;
+            text-align: center;
+        }
+        #chat-container {
+            display: none;
+        }
+        #user-greeting {
+            font-weight: bold;
+        }
+        #change-password-container {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+    </style>
+    <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/0.1.0-beta.5/libs/oversea/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>IDECO CHAT BOT 3</h1>
+        <div id="login-form">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+            <p id="error-message"></p>
+        </div>
+        <div id="chat-container">
+            <p>Welcome, <span id="user-greeting"></span>!</p>
+            <button onclick="logout()">Logout</button>
+            <div id="change-password-container" style="display: none;">
+                <h3>Change Password</h3>
+                <input type="password" id="old-password" placeholder="Old Password" required>
+                <input type="password" id="new-password" placeholder="New Password" required>
+                <button onclick="changePassword()">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const users = {
+            'idecochat': { password: 'ideco@2024', canChangePassword: false },
+            'minhtriet1973': { password: 'initial_password', canChangePassword: true }
+        };
+
+        let currentUser = null;
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+                document.getElementById('user-greeting').textContent = username;
+                
+                if (users[username].canChangePassword) {
+                    document.getElementById('change-password-container').style.display = 'block';
+                }
+
+                initChatSDK();
+            } else {
+                errorMessage.textContent = 'Invalid username or password';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('chat-container').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('error-message').textContent = '';
+        }
+
+        function changePassword() {
+            if (!currentUser || !users[currentUser].canChangePassword) return;
+
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            if (users[currentUser].password === oldPassword) {
+                users[currentUser].password = newPassword;
+                alert('Password changed successfully');
+                document.getElementById('old-password').value = '';
+                document.getElementById('new-password').value = '';
+            } else {
+                alert('Incorrect old password');
+            }
+        }
+
+        function initChatSDK() {
+            new CozeWebSDK.WebChatClient({
+                config: {
+                    bot_id: '7392881755516223505',
+                },
+                componentProps: {
+                    title: 'IDECO',
+                },
+            });
+        }
+    </script>
+</body>
+</html>
